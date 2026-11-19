@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" data-palette="mist">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>标准指法练习 · 在线打字练习</title>
+<link rel="stylesheet" href="assets/styles.css?v=20261119s" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__left">
+      <button class="brand" type="button" id="btnBrand" aria-label="回到当前关卡起点">
+        <span class="brand__mark" aria-hidden="true">⌨</span>
+        <span class="brand__name">打字练习</span>
+      </button>
+      <nav class="crumb" aria-label="面包屑">
+        <span class="crumb__item">标准指法练习</span>
+        <span class="crumb__sep" aria-hidden="true">/</span>
+        <span class="crumb__item crumb__item--current" id="crumbLevel">关卡 02 - 练习 f 和 j</span>
+      </nav>
+    </div>
+    <div class="topbar__actions">
+      <button class="icon-btn icon-btn--levels" type="button" id="btnLevels" aria-haspopup="dialog">选择关卡</button>
+      <button class="icon-btn" type="button" id="btnCustom">自定义文本</button>
+      <button class="icon-btn" type="button" id="btnSound" aria-pressed="true">按键音</button>
+      <button class="icon-btn" type="button" id="btnHint" aria-pressed="true">键位提示</button>
+      <button class="icon-btn" type="button" id="btnPalette" aria-haspopup="dialog">配色</button>
+      <button class="icon-btn" type="button" id="btnTheme" aria-pressed="false">主题</button>
+      <button class="icon-btn" type="button" id="btnPause" aria-pressed="false">暂停</button>
+      <button class="icon-btn icon-btn--solid" type="button" id="btnRestart">重新开始</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="typing-shell" aria-label="打字练习">
+      <div class="typing-main">
+        <div class="typing-content">
+          <div class="stage" id="stage" tabindex="0" role="application"
+               aria-label="英文打字练习，直接使用键盘输入"></div>
+          <div class="cheer" id="cheer" aria-live="polite">准备好了就按第一个键吧～</div>
+        </div>
+
+        <div class="progress" id="progress" role="progressbar"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="本关进度">
+          <div class="progress__fill" id="progressFill"></div>
+        </div>
+
+        <div class="keyboard-col">
+          <div class="finger-hint" id="fingerHint">
+            <span class="finger-hint__hand" id="fingerHand">左手</span>
+            <span class="finger-hint__finger" id="fingerName">食指</span>
+            <span class="finger-hint__text">输入按键</span>
+            <kbd class="finger-hint__key" id="fingerKey">F</kbd>
+          </div>
+          <div class="stage-tip" id="stageTip">先慢一点，看着指法提示把每个键按准。</div>
+          <div class="keyboard" id="keyboard" aria-label="虚拟键盘"></div>
+        </div>
+      </div>
+
+      <aside class="stats" aria-label="实时统计">
+        <div class="stats__item">
+          <span class="stats__label">速度</span>
+          <div class="stats__value-row">
+            <strong class="stats__value" id="statSpeed">0</strong>
+            <span class="stats__unit">字/分钟</span>
+          </div>
+        </div>
+        <div class="stats__item stats__item--stars">
+          <span class="stats__label">表现星星</span>
+          <div class="stars" id="stars" role="img" aria-label="目前获得 0 颗星，共 5 颗">
+            <span class="star" aria-hidden="true">★</span>
+            <span class="star" aria-hidden="true">★</span>
+            <span class="star" aria-hidden="true">★</span>
+            <span class="star" aria-hidden="true">★</span>
+            <span class="star" aria-hidden="true">★</span>
+          </div>
+          <div class="combo" id="comboChip">
+            <span class="combo__icon" aria-hidden="true">✦</span>
+            <strong class="combo__num" id="statCombo">0</strong>
+            <span class="combo__unit">连对</span>
+          </div>
+        </div>
+        <div class="stats__item">
+          <span class="stats__label">用时</span>
+          <div class="stats__value-row">
+            <strong class="stats__value" id="statTime">0</strong>
+            <span class="stats__unit">秒</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- 暂停遮罩 -->
+  <div class="overlay" id="pauseOverlay" hidden>
+    <div class="overlay__card">
+      <h2 class="overlay__title">已暂停</h2>
+      <p class="overlay__desc">计时已停止，按空格键或点击下方按钮继续。</p>
+      <button class="btn btn--primary" type="button" id="btnResume">继续练习</button>
+    </div>
+  </div>
+
+  <!-- 完成弹层 -->
+  <div class="overlay" id="resultOverlay" hidden>
+    <div class="overlay__card overlay__card--result">
+      <div class="result__badge" aria-hidden="true">★</div>
+      <h2 class="overlay__title">本关完成</h2>
+      <p class="overlay__desc" id="resultDesc">保持节奏，继续下一关。</p>
+      <div class="result__stars" id="resultStarRow" aria-label="本关获得的星星">
+        <span class="star" aria-hidden="true">★</span>
+        <span class="star" aria-hidden="true">★</span>
+        <span class="star" aria-hidden="true">★</span>
+        <span class="star" aria-hidden="true">★</span>
+        <span class="star" aria-hidden="true">★</span>
+      </div>
+      <div class="result__grid">
+        <div class="result__cell">
+          <span class="stats__label">速度</span>
+          <div class="result__value-row">
+            <strong class="result__value" id="resultSpeed">0</strong>
+            <span class="stats__unit">字/分钟</span>
+          </div>
+        </div>
+        <div class="result__cell">
+          <span class="stats__label">最长连对</span>
+          <div class="result__value-row">
+            <strong class="result__value" id="resultCombo">0</strong>
+            <span class="stats__unit">个</span>
+          </div>
+        </div>
+        <div class="result__cell">
+          <span class="stats__label">本次准确率</span>
+          <div class="result__value-row">
+            <strong class="result__value" id="resultAccuracy">0%</strong>
+          </div>
+        </div>
+        <div class="result__cell">
+          <span class="stats__label">用时</span>
+          <div class="result__value-row">
+            <strong class="result__value" id="resultTime">0</strong>
+            <span class="stats__unit">秒</span>
+          </div>
+        </div>
+      </div>
+      <p class="result__extra" id="resultExtra">本关历史最好：0 颗星</p>
+      <div class="overlay__actions">
+        <button class="btn" type="button" id="btnRetry">再练一次</button>
+        <button class="btn btn--primary" type="button" id="btnNext">下一关</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 配色选择 -->
+  <div class="overlay" id="paletteOverlay" hidden>
+    <div class="overlay__card overlay__card--palette">
+      <h2 class="overlay__title">选择配色</h2>
+      <p class="overlay__desc">挑一套喜欢的颜色，顶部「主题」可以单独切深浅。</p>
+      <div class="palette-grid" id="paletteList"></div>
+      <div class="overlay__actions">
+        <button class="btn" type="button" id="btnPaletteClose">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 关卡选择 -->
+  <div class="overlay" id="levelOverlay" hidden>
+    <div class="overlay__card overlay__card--levels">
+      <div class="levels__top">
+        <div>
+          <h2 class="overlay__title">选择关卡</h2>
+          <p class="overlay__desc">按「学习 → 练习 → 回顾 → 游戏」的顺序推进，共 <span id="levelCount">0</span> 关。</p>
+        </div>
+        <button class="btn btn--ghost" type="button" id="btnLevelsClose">关闭</button>
+      </div>
+      <div class="levels" id="levels"></div>
+    </div>
+  </div>
+
+  <!-- 自定义文本弹层 -->
+  <div class="overlay" id="customOverlay" hidden>
+    <div class="overlay__card overlay__card--custom">
+      <h2 class="overlay__title">自定义练习文本</h2>
+      <p class="overlay__desc">粘贴任意文本，仅支持英文字母、数字和常见标点；中文需切换输入法，不建议用于指法练习。</p>
+      <textarea id="customText" class="textarea" rows="8" spellcheck="false"
+                placeholder="例如：the quick brown fox jumps over the lazy dog"></textarea>
+      <div class="overlay__actions">
+        <button class="btn" type="button" id="btnCustomCancel">取消</button>
+        <button class="btn btn--primary" type="button" id="btnCustomApply">开始练习</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 全页撒花层：覆盖整个视口，不拦截鼠标 -->
+  <div class="confetti-layer" id="resultConfetti" aria-hidden="true"></div>
+
+  <script src="assets/drills.js?v=20261119"></script>
+  <script src="assets/app.js?v=20261119e"></script>
+</body>
+</html>
